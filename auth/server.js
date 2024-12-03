@@ -1,20 +1,22 @@
 import express from 'express';
-import { MongoClient } from 'mongodb';
-import router from './routes.js';
+import mongoose from 'mongoose';
+import router from './user.routes.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
 
-const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const dbName = process.env.MONGODB_DB || 'auth';
+const port = process.env.PORT;
 
-let db;
+const mongoUrl = process.env.MONGODB_URI;
+
+app.use(express.json());
 
 // Connexion MongoDB
-MongoClient.connect(mongoUrl)
+mongoose.connect(mongoUrl)
     .then(client => {
         console.log('✅ MongoDB connecté');
-        db = client.db(dbName);
     })
     .catch(err => console.error('❌ Erreur MongoDB:', err));
 

@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import uniqueValidator from 'mongoose-unique-validator';
+import bcrypt from 'bcrypt';
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -12,7 +14,8 @@ const userSchema = new mongoose.Schema({
         required: [true, 'L\'email est obligatoire'],
         unique: true,
         trim: true,
-        lowercase: true
+        lowercase: true,
+        match: [/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/, 'L\'email est invalide']
     },
     password: {
         type: String,
@@ -21,6 +24,8 @@ const userSchema = new mongoose.Schema({
     }
 
 });
+
+userSchema.plugin(uniqueValidator, { message: '{PATH} doit être unique' });
 
 userSchema.pre('save', function(next) {
     if (!this.isModified('password')) {
@@ -33,6 +38,8 @@ userSchema.pre('save', function(next) {
 userSchema.methods.comparePassword = function(plainPassword) {
     return bcrypt.compareSync(plainPassword, this.password);
 };
+
+
 
     const User = mongoose.model('User', userSchema);
 
